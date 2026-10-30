@@ -1,0 +1,114 @@
+{% extends 'listbase.html' %}
+
+{% block title %}
+<div class="header-devices">
+    <span style="display: inline-block; padding-right: 1500px;">
+        <div class="title-devices">
+          Reglas
+        </div>
+    </span>
+    <span style="display: inline-block; ">
+        <button id="button-new" type="button" class="btn btn-info button-custom2">Nueva regla</button>
+    </span>
+    <script>
+        // Obtener el botón por su ID
+        var button_new = document.getElementById("button-new");
+      
+        // Agregar un listener para el evento "click"
+        button_new.onclick = function() {
+          // Redirigir a la URL deseada
+          window.location.href = "{% url 'regla_crear' %}";
+        };
+      </script>
+</div>
+
+
+{% endblock %}
+
+{% block items %}
+<p>
+    <span style="display: inline-block; padding-right: 100px;">
+        <strong>Condición: </strong>  Dispositivo '{{ element.device1.name }}' (id = {{ element.device1.id }})
+        {% if element.comparator == 'MORE_THAN'%}
+            mayor que 
+        {% elif element.comparator == 'LESS_THAN'%}
+            menor que 
+        {% else %}
+            igual a 
+        {% endif %}
+        {{ element.value}}
+    </span>
+    <span style="display: inline-block; padding-right: 800px;">
+        <strong>Resultado: </strong>  
+        {% if element.turn_on %}
+            Encender
+        {% else %}
+            Apagar
+        {% endif %}
+        '{{ element.device2.name }}' (id = {{ element.device2.id }})
+    </span>
+</p>
+
+<p>
+    <span style="display: inline-block; padding-right: 50px;" class="edit-element">
+        <button onclick="redirectToEdit({{ element.id }})" type="button" class="btn btn-secondary button-custom">Editar</button>
+    </span>
+    
+    <span style="display: inline-block; padding-right: 50px;">
+        <button type="button" class="btn btn-danger button-custom" data-bs-toggle="modal" data-bs-target="#Modal{{ element.id }}">Borrar</button>
+    
+    </span>
+</p>
+
+<script>
+    // Obtener el botón por su ID
+    function redirectToEdit(device_id) {
+      // Construir la URL de detalle del producto
+      var urlDetalleProducto = "{% url 'regla_editar' id=0 %}".replace('0', device_id);
+
+      // Redirigir a la URL
+      window.location.href = urlDetalleProducto;
+    }
+    
+</script>
+
+<div class="modal fade" id="Modal{{element.id}}" tabindex="-1" aria-labelledby="ModalLabel{{element.id}}" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="ModalLabel{{element.id}}">Eliminar regla</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>
+            Estás seguro de que quieres eliminar
+          </p>
+          <p>esta regla</p>
+        </div>
+        <div class="modal-footer">
+          <button method="post" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button onclick="redirectToDelete({{ element.id }})" id="button-delete" type="button" class="btn btn-primary">Eliminar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    function redirectToDelete(device_id) {
+      // Construir la URL de detalle del producto
+      
+        // Realizar una solicitud POST al servidor
+      fetch("{% url 'regla_eliminar' id=0%}".replace('0', device_id))
+      .then(response => response.json())
+        .then(data => {
+            if (data.cambio === true) {
+                // Si la base de datos ha cambiado, recargar la página
+                location.reload();
+            }
+      });
+      
+    
+    }
+    
+  </script>
+
+{% endblock %}

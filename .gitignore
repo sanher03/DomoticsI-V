@@ -1,0 +1,22 @@
+# Local Python environments and generated files
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Local application state
+*.sqlite3
+*.log
+.env
+
+# JavaScript dependencies
+node_modules/
+
+# Local wiki clone; canonical project documentation lives in docs/
+practica3.wiki/
+
+# Editor and operating-system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

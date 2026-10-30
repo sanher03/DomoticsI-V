@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="panel panel-dispositivos">
+    <div class="title">
+      Dispositivos
+    </div>
+    <div class="diagonals" data-v-207d979a="">
+      <div class="diag-left" data-v-207d979a=""></div>
+      <div class="diag-right" data-v-207d979a=""></div>
+    </div>
+    <div class="paragraph">
+      <p>
+        Con el nuevo sistema de domotica proporcionado por Domotics I&V odos los dispositivos de nuestra casa están conectados.
+        El propósito es unificar todos los sistemas utilizados a diario para poder tener el control completo de los espacios más cercanos a nosotros
+      </p>
+      <p>
+        Prepárate para poder controlar todos tus dispositivos, editarlos y añadir nuevos a tu sistema domótico.
+        También puedes consultar el estado de tus dispositivos domóticos en tiempo real.
+      </p>
+      
+      <button id="button-devices" type="button"  class="btn btn-outline-primary button_home">Ver más</button>
+     
+      
+    </div>
+    
+    
+  </div>
+  <div class="panel panel-reglas">
+    <div class="title">
+      Reglas
+    </div>
+    <div class="diagonals" data-v-207d979a="">
+      <div class="diag-left" data-v-207d979a=""></div>
+      <div class="diag-right" data-v-207d979a=""></div>
+    </div>
+    <div class="paragraph">
+      <p>
+        Este sistema te permitirá establecer reglas entre tus dispositivos completamente a tu gusto.
+        Podrás establecer condiciones de igualdad, mayor o menor valor para los sensores y relojes.
+      </p>
+      <p>
+        Estas reglas se accionarán automáticamente mediante nuestro sistema, los interruptores se encenderán 
+        o apagarán inmediatamente
+      </p>
+      <button id="button-rules" type="button" class="btn btn-outline-primary button_home">Ver más</button>
+    </div>
+    
+    
+  </div>
+  <div class="panel panel-eventos">
+    <div class="title">
+      Eventos
+    </div>
+    <div class="diagonals" data-v-207d979a="">
+      <div class="diag-left" data-v-207d979a=""></div>
+      <div class="diag-right" data-v-207d979a=""></div>
+    </div>
+    <div class="paragraph">
+      <p>
+        Toda la información acerca de los dispositivos se mostrará en una nueva pestaña denominada eventos.
+        Aquí podrás consultar notificaciones acerca de los eventos cuando quieras
+      </p>
+      <p>
+        Consultas, cambios debidos a las reglas, todo esto aparecerá en este panel
+      </p>
+      <button id="button-events" type="button" class="btn btn-outline-primary button_home">Ver más</button>
+    </div>
+
+    <script>
+      // Obtener el botón por su ID
+      var button_devices = document.getElementById("button-devices");
+      var button_rules = document.getElementById("button-rules");
+      var button_events = document.getElementById("button-events");
+    
+      // Agregar un listener para el evento "click"
+      button_devices.onclick = function() {
+        // Redirigir a la URL deseada
+        window.location.href = "{% url 'dispositivos' %}";
+      };
+
+      button_rules.onclick = function() {
+        // Redirigir a la URL deseada
+        window.location.href = "{% url 'reglas' %}";
+      };
+
+      button_events.onclick = function() {
+        // Redirigir a la URL deseada
+        window.location.href = "{% url 'eventos' %}";
+      };
+    </script>
+    
+</div>
+{% endblock %}
+  

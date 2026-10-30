@@ -1,0 +1,89 @@
+services:
+  mqtt:
+    image: eclipse-mosquitto:2
+    restart: unless-stopped
+    volumes:
+      - ./server_domotics/mosquitto.local.conf:/mosquitto/config/mosquitto.conf:ro
+    healthcheck:
+      test: ["CMD", "mosquitto_pub", "-h", "127.0.0.1", "-p", "1883", "-t", "health", "-m", "ok"]
+      interval: 3s
+      timeout: 2s
+      retries: 20
+      start_period: 2s
+
+  web:
+    build: .
+    restart: unless-stopped
+    command: sh -c "python manage.py migrate --noinput && python manage.py seed_demo && python manage.py runserver 0.0.0.0:8000"
+    environment:
+      DJANGO_DB_PATH: /app/data/db.sqlite3
+      DJANGO_ALLOWED_HOSTS: "*"
+      DJANGO_DEBUG: "true"
+      MQTT_HOST: ${MQTT_HOST:-mqtt}
+      MQTT_PORT: ${MQTT_PORT:-1883}
+    ports:
+      - "${WEB_PORT:-8000}:8000"
+    volumes:
+      - domotics_data:/app/data
+    depends_on:
+      mqtt:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "from urllib.request import urlopen; urlopen('http://127.0.0.1:8000/', timeout=2)"
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+
+  controller:
+    build: .
+    restart: unless-stopped
+    command: python -u -m controller.controller --host ${MQTT_HOST:-mqtt} --port ${MQTT_PORT:-1883}
+    environment:
+      DJANGO_DB_PATH: /app/data/db.sqlite3
+      MQTT_HOST: ${MQTT_HOST:-mqtt}
+      MQTT_PORT: ${MQTT_PORT:-1883}
+    volumes:
+      - domotics_data:/app/data
+    depends_on:
+      mqtt:
+        condition: service_healthy
+      web:
+        condition: service_healthy
+
+  switch:
+    build: .
+    restart: unless-stopped
+    command: python -u -m iot_devices.dummy_switch --host ${MQTT_HOST:-mqtt} --port ${MQTT_PORT:-1883} --probability 1 101
+    depends_on:
+      mqtt:
+        condition: service_healthy
+      web:
+        condition: service_healthy
+
+  sensor:
+    build: .
+    restart: unless-stopped
+    command: python -u -m iot_devices.dummy_sensor --host ${MQTT_HOST:-mqtt} --port ${MQTT_PORT:-1883} --interval 2 --min 10 --max 30 --increment 2 102
+    depends_on:
+      mqtt:
+        condition: service_healthy
+      web:
+        condition: service_healthy
+
+  clock:
+    build: .
+    restart: unless-stopped
+    command: python -u -m iot_devices.dummy_clock --host ${MQTT_HOST:-mqtt} --port ${MQTT_PORT:-1883} --time 09:00:00 --increment 1 --rate 1 103
+    depends_on:
+      mqtt:
+        condition: service_healthy
+      web:
+        condition: service_healthy
+
+volumes:
+  domotics_data:

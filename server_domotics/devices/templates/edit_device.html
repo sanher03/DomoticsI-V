@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+
+<div class="header-devices">
+    <div class="title-devices title-center">
+        Editar dispositivo
+     </div>
+</div>
+
+
+
+{% endblock %}
+  
+
+{% block content %}
+
+<form method="post">
+    {% csrf_token %}
+    <div class="form-container">
+        <div class="mb-3 form-field">
+            <label for="exampleInputEmail1" class="form-label">Identificador:</label>
+            <div>
+                {{form.id}}
+            </div>
+        </div>
+        <div class="mb-3 form-field">
+            <label for="exampleInputEmail1" class="form-label">Nombre:</label>
+            <div>
+                {{form.name}}
+            </div>
+        </div>
+
+        <div class="mb-3 form-field">
+            <label for="exampleInputEmail1" class="form-label">Tipo:</label>
+            <div>
+                {% for radio in form.type %}
+                <div class="form-check">
+                    {{ radio }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="mb-3 error-message">
+            {{error_message}}
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Confirmar cambios</button>
+    </div>
+    
+  </form>
+{% endblock %}
+  

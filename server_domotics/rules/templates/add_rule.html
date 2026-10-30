@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+
+<div class="header-devices">
+    <div class="title-devices title-center">
+        Añadir regla
+     </div>
+</div>
+
+
+
+{% endblock %}
+  
+
+{% block content %}
+
+
+<form method="post">
+    {% csrf_token %}
+    <div class="container-left">
+        <p>
+            Recuerda que para añadir una regla hay que tener en cuenta varios factores:
+        </p>
+        <p></p>
+        <p>1. Si eliges que el dispositivo causa sea un sensor, el valor introducido </p>
+        <p>debe ser un entero. </p>
+        <p></p>
+        <p>2. Si eliges que el dispositivo sea un reloj, el valor introducido  </p>
+        <p>debe ser compatible con el formato ISO ('HH:MM:SS') </p>
+        <p></p>
+        <p>3. Y, por último, solo se podrán seleccionar relojes y sensores como dispositivos  </p>
+        <p> causantes y los dispositivos afectados solo podrán ser interruptores. </p>
+
+    </div>
+    <div class="form-container2">
+        <div class="mb-3 form-field2">
+            <label for="exampleInputEmail1" class="form-label">Nombre:</label>
+            <div>
+                {{form.name}}
+            </div>
+        </div>
+
+        <div class="mb-3 form-field2">
+            <label for="exampleInputEmail1" class="form-label">Dispositivos causante:</label>
+            <div id="select-device1">
+                {{form.device1}}
+            </div>
+        </div>
+
+        <div class="mb-3 form-field2">
+            <label for="exampleInputEmail1" class="form-label">Comparación:</label>
+            <div>
+                {{form.comparator}}
+            </div>
+        </div>
+
+        <div class="mb-3 form-field2">
+            <label for="exampleInputEmail1" class="form-label">Valor a comparar:</label>
+            <div>
+                {{form.value}}
+            </div>
+        </div>
+
+        <div class="mb-3 form-field2">
+            <label for="exampleInputEmail1" class="form-label">Dispositivo afectado:</label>
+            <div>
+                {{form.device2}}
+            </div>
+        </div>
+
+        <div class="mb-3 form-field2">
+            <label for="exampleInputEmail1" class="form-label">Acción:</label>
+            <div>
+                {{form.turn_on}}
+            </div>
+        </div>
+        
+        <div class="mb-3 error-message">
+            {{error_message}}
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Añadir regla</button>
+    </div>
+    
+  </form>
+{% endblock %}
+  

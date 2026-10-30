@@ -1,0 +1,157 @@
+{% extends 'listbase.html' %}
+
+{% block title %}
+
+<div class="header-devices">
+  <span style="display: inline-block; padding-right: 1400px;">
+    <div class="title-devices">
+      Dispositivos
+    </div>
+</span>
+<span style="display: inline-block; ">
+    <button id="button-new" type="button" class="btn btn-info button-custom2">Registrar dispositivo</button>
+</span>
+<script>
+  // Obtener el botón por su ID
+  var button_new = document.getElementById("button-new");
+
+  // Agregar un listener para el evento "click"
+  button_new.onclick = function() {
+    // Redirigir a la URL deseada
+    window.location.href = "{% url 'dispositivo_crear' %}";
+  };
+</script>
+</div>
+
+{% endblock %}
+
+{% block items %}
+<p>
+  <span style="display: inline-block; padding-right: 50px;">
+  
+    <strong>Nombre: </strong>  {{ element.name }} 
+  </span>
+  <span style="display: inline-block; padding-right: 50px;">
+    <strong>Identificador: </strong> {{ element.id }} 
+  </span>
+
+  
+  <span style="display: inline-block">
+    <strong>Tipo: </strong> {{ element.type }} 
+  </span>
+  
+</p>
+  
+<p>
+  {% if element.type != 'CLOCK' %}
+  <span style="display: inline-block; padding-right: 50px;" class="consult-element">
+    <button onclick="redirectToConsult({{ element.id }})" type="button" class="btn btn-primary button-custom3" id="liveToastBtn{{element.id}}">Consultar estado</button>
+  </span>
+  <span style="display: inline-block; padding-right: 50px;" >
+    <button onclick="redirectToEdit({{ element.id }})"  type="button" class="btn btn-secondary button-custom">Editar</button>
+  </span>
+  {% else %}
+  <span style="display: inline-block; padding-right: 50px;" class="edit-element">
+    <button onclick="redirectToEdit({{ element.id }})"  type="button" class="btn btn-secondary button-custom">Editar</button>
+  </span>
+  {% endif %}
+  
+  
+  
+
+  <span style="display: inline-block; padding-right: 50px;" >
+    <button type="button" class="btn btn-danger button-custom" data-bs-toggle="modal" data-bs-target="#Modal{{ element.id }}">Borrar</button>
+
+</p>
+  
+  <script>
+    // Obtener el botón por su ID
+    function redirectToEdit(device_id) {
+      // Construir la URL de detalle del producto
+      var urlDetalleProducto = "{% url 'dispositivo_editar' id=0 %}".replace('0', device_id);
+
+      // Redirigir a la URL
+      window.location.href = urlDetalleProducto;
+    }
+    
+  </script>
+
+
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="liveToast{{element.id}}" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header blue">
+        <img src="..." class="rounded me-2" alt="...">
+        <strong class="me-auto">Consulta</strong>
+        <small>ahora</small>
+        <button type="button" class="btn-close white" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">
+        <p>Puede ver su consulta sobre el dispositivo </p>
+        <p>'{{element.name}}' en la pestaña de eventos</p>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function redirectToConsult(device_id) {
+      const toastTrigger = document.getElementById('liveToastBtn0'.replace('0', device_id));
+      const toastLiveExample = document.getElementById('liveToast0'.replace('0', device_id));
+
+      
+      const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample);
+        
+      toastBootstrap.show();
+
+      
+      
+      fetch("{% url 'dispositivo_consultar' id=0%}".replace('0', device_id))
+      .then(response => response.json());
+            
+      
+    }
+    
+  </script>
+
+
+  <div class="modal fade" id="Modal{{element.id}}" tabindex="-1" aria-labelledby="ModalLabel{{element.id}}" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="ModalLabel{{element.id}}">Eliminar dispositivo</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>
+            Estás seguro de que quieres eliminar
+          </p>
+          <p>este dispositivo</p>
+        </div>
+        <div class="modal-footer">
+          <button method="post" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button onclick="redirectToDelete({{ element.id }})" id="button-delete" type="button" class="btn btn-primary">Eliminar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    function redirectToDelete(device_id) {
+      // Construir la URL de detalle del producto
+      
+        // Realizar una solicitud POST al servidor
+      fetch("{% url 'dispositivo_eliminar' id=0%}".replace('0', device_id))
+      .then(response => response.json())
+        .then(data => {
+            if (data.cambio === true) {
+                // Si la base de datos ha cambiado, recargar la página
+                location.reload();
+            }
+      });
+      
+    
+    }
+    
+  </script>
+  
+</span>
+{% endblock %}

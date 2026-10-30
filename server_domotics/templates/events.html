@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<div class="header-devices">
+    <div class="title-devices">
+        Eventos
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block content %}
+<div class="event-tabs">
+    
+    <ul class="nav nav-underline">
+        <li class="nav-item">
+          <a id="button-new" class="nav-link active" aria-current="page" href="#">
+            Nuevo
+            {% if messages  == "YES"%}
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger ">
+                {{size_events}}
+                <span class="visually-hidden">unread messages</span>
+              </span>
+            {% endif %}
+          </a>
+        </li>
+        <li class="nav-item">
+          <a id="button-all" class="nav-link" href="#">Todos</a>
+        </li>
+    </ul>
+</div>
+<div id="not-read-events" class="event-tabs">
+    <ul class="list-group list-group-flush">
+        {% for event in not_read_events %}
+        <li class="list-group-item">
+            {% if event.state == 'QUERY'%}
+            <span>
+                Consulta del dispositivo '{{ event.device.name}}'(id={{ event.device.id}}): El valor del dispositivo es {{event.value}}
+            </span>
+            {% else %}
+            <span>
+                {% if event.value == "ON" %}
+                    {% if event.status == "SUCCEDED" %}
+                    El dispositivo '{{ event.device.name}}'(id={{ event.device.id}}) se encendió  satisfactoriamente
+                    {% else %}
+                    El dispositivo '{{ event.device.name}}'(id={{ event.device.id}}) no se pudo encender
+                    {% endif %} 
+                {% else %}
+                    {% if event.status == "SUCCEDED" %}
+                    El dispositivo '{{ event.device.name}}'(id={{ event.device.id}}) se apagó satisfactoriamente
+                    {% else %}
+                    El dispositivo '{{ event.device.name}}'(id={{ event.device.id}}) no se pudo apagar
+                    {% endif %}
+                {% endif %}
+
+            </span>
+            {% endif %}
+            <span>
+                <button onclick="redirectToRead({{event.id}})" type="button" class="btn btn-outline-primary button-event">Marcar como leido</button>
+            </span>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+<script>
+    function redirectToRead(event_id) {
+      // Construir la URL de detalle del producto
+      
+        // Realizar una solicitud POST al servidor
+      fetch("{% url 'evento_leer' id=0%}".replace('0', event_id))
+      .then(response => response.json())
+        .then(data => {
+            if (data.cambio === true) {
+                // Si la base de datos ha cambiado, recargar la página
+                location.reload();
+            }
+      });
+      
+    
+    }
+    
+  </script>
+
+<div id="all-events" class="event-tabs non-visible-tab">
+    <ul class="list-group list-group-flush">
+        {% for event in all_events %}
+        <li class="list-group-item">
+            {% if event.state == 'QUERY'%}
+            <span>
+                Consulta del dispositivo '{{ event.device.name}}'(id={{ event.device.id}}): El valor del dispositivo es {{event.value}}
+            </span>
+            {% else %}
+            <span>
+                El dispositivo '{{ event.device.name}}'(id={{ event.device.id}}) cambió al valor {{event.value}}
+            </span>
+            {% endif %}
+            <span></span>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+<script>
+    var panel1 = document.getElementById("not-read-events");
+    var panel2 = document.getElementById("all-events");
+    var button_new = document.getElementById("button-new");
+    var button_all = document.getElementById("button-all");
+
+    button_new.addEventListener("click", function (e) {
+        panel1.style.display = "block";
+        panel2.style.display = "none";
+        button_new.classList.add("active");
+        button_all.classList.remove("active");
+    });
+
+    button_all.addEventListener("click", function (e) {
+        panel1.style.display = "none";
+        panel2.style.display = "block";
+        button_all.classList.add("active");
+        button_new.classList.remove("active");
+    });
+  
+   
+  </script>
+
+
+{% endblock %}
